@@ -1,465 +1,319 @@
-// var canvasBg = document.getElementById('game');
-// var ctx = canvasBg.getContext("2d");
-
-// var image = new Image();
-// image.src = "../Cow-Tipping/images/Level-Layout.png";
-
-// ctx.drawImage(image, 0, 0, 7680, 720)
-
-
 var canvas = document.getElementById('game');
-var context = canvas.getContext("2d");
+var context = canvas.getContext('2d');
+var gameStarted = false;
 var keys = [];
-var gameStart = false;
-var friction = 0.6;
-var gravity = .9;
+var friction = 0.91;
+var gravity = 0.9;
+var complete = false;
 
+
+var titleStart = new Image();
+titleStart.src = "../Cow-Tipping/images/Start-menu.png"
 var bgImage = new Image();
-// bgImage.src = "../Cow-Tipping/images/Level-Layout.png";
+bgImage.src = "../Cow-Tipping/images/New-Background.png";
+var mikeIdle = new Image();
+mikeIdle.src = "../Cow-Tipping/images/Mike-1@216x-8.png";
+var mikeRight1 = new Image();
+mikeRight1.src = "../Cow-Tipping/images/Mike-2-Right@216x-8.png";
+var mikeRight2 = new Image();
+mikeRight1.src = "../Cow-Tipping/images/Mike-3-Right@216x-8.png";
 
-var backgroundScroll = {
-  x: 0,
-  y: 0
-}
+var treeHouse = {
+  x: 658,
+  y: 222,
+  width: 50,
+  height: 85
+};
 
 
-// STAR BACKGROUND
+var mikeRight = [];
+
+
+mikeRight.push(mikeRight1);
+mikeRight.push(mikeIdle);
+mikeRight.push(mikeRight2);
 
 
 
-// PLAYER 1=================================================================================
+
+console.log(mikeRight)
 
 var mike = {
-  x: 10,
-  y: 300,
-  width: 80,
-  height: 100,
-  speed: 30,
-  velX: 0,
-  velY: 0,
-  jump: false,
+	x: canvas.width/2,
+	y: canvas.height - 110,
+	width: 40,
+	height: 60,
+	speed: 4,
+	velX: 0,
+	velY: 0,
+	color: "#fff",
+	jumping: false,
   grounded: false,
-  jumpPower: 8,
-  color: "#fbfbfb",
-  draw: function(){
-    context.fillStyle = this.color;
-    context.fillRect(this.x, this.y, this.width, this.height);
-  }
+  position: "idle",
+	jumpStrength: 7,
+	draw: function(){
+    context.drawImage(mikeIdle, this.x, this.y, this.width, this.height);
+    
+    
+	}
 }
 
+var platforms = [];
+var platform_width = 100;
+var platform_height = 15;
 
-// PLATFORMS================================================================================
-var platform = [];
-var grassPfWidth = 1065; 
-var grassPfheight = 215; // height 215 width 800
-
-platform.push({ //#1
-  x: 0,
-  y: 525,
-  width: 1060,
-  height: grassPfheight
+platforms.push({ //Bottom Platform
+  x: 95,
+  y: 1100,
+  width: 540,
+  height: 100
 });
 
-platform.push({ //#2
-  x: 1145,
-  y: 525,
-  width: grassPfWidth,
-  height: grassPfheight
+platforms.push({ // Platform 1
+    x: 470,
+    y: 1020,
+    width: platform_width,
+    height: platform_height,
 });
 
-platform.push({ //#3
-  x: 2340,
-  y: 525,
-  width: 210,
-  height: grassPfheight
+platforms.push({ // Platform 2
+    x: 290,
+    y: 965,
+    width: platform_width,
+    height: platform_height,
 });
 
-platform.push({ //#4
-  x: 2670,
-  y: 525,
-  width: grassPfWidth,
-  height: grassPfheight
+platforms.push({ // Platform 3
+    x: 65,
+    y: 905,
+    width: 235,
+    height: platform_height,
 });
 
-platform.push({ //#5
-  x: 3835,
-  y: 450,
-  width: 85,
-  height: 25
+platforms.push({ // Platform 4
+  x: 380,
+  y: 810,
+  width: 150,
+  height: 15,
 });
 
-platform.push({ //#6
-  x: 3960,
-  y: 400,
-  width: 90,
-  height: 25
+platforms.push({ // Platform 5
+  x: 215,
+  y: 740,
+  width: 40,
+  height: 20,
 });
 
-platform.push({ //#7
-  x: 4065,
-  y: 325,
-  width: 205,
-  height: 25
+platforms.push({ // Platform 6  
+  x: 355,
+  y: 640,
+  width: 120,
+  height: 20,
 });
 
-platform.push({ //#8
-  x: 4320,
+platforms.push({ // Platform 7
+  x: 455,
+  y: 585,
+  width: 230,
+  height: platform_height,
+});
+
+platforms.push({ // Platform 8  
+  x: 220,
+  y: 545,
+  width: 140,
+  height: 15,
+});
+
+platforms.push({ // Platform 9  
+  x: 60,
+  y: 425,
+  width: 120,
+  height: 20,
+});
+
+platforms.push({ // Platform 10
+  x: 310,
   y: 375,
-  width: 90,
-  height: 25
-});
-
-platform.push({ //#9
-  x: 4345,
-  y: 190,
-  width: 90,
-  height: 25
-});
-
-platform.push({ //#10
-  x: 4400,
-  y: 170,
-  width: 275,
-  height: 20
-});
-
-platform.push({ //#11
-  x: 4650,
-  y: 190,
-  width: 90,
-  height: 25
-});
-
-platform.push({ //#12
-  x: 4570,
-  y: 450,
-  width: 85,
-  height: 25
-});
-
-
-platform.push({ //#13
-  x: 4695,
-  y: 400,
-  width: 90,
-  height: 25
-});
-
-platform.push({ //#14
-  x: 4800,
-  y: 325,
-  width: 205,
-  height: 25
-});
-
-platform.push({ //#15
-  x: 5065,
-  y: 375,
-  width: 90,
-  height: 25
-});
-
-platform.push({ //#16
-  x: 5180,
-  y: 525,
-  width: grassPfWidth,
-  height: grassPfheight
-});
-
-platform.push({ //#17
-  x: 6450,
-  y: 580,
   width: 45,
-  height: 120
+  height: 20,
 });
 
-platform.push({ //#17
-  x: 6700,
-  y: 525,
-  width: 1000,
-  height: grassPfheight
+platforms.push({ // TreeHouse Platform  
+  x: 465,
+  y: 310,
+  width: 260,
+  height: 25,
 });
-
-
-// PLATFORM END================================================================================
-
-// class Vector2{
-//   constructor(x, y){
-//     this.x = x;
-//     this.y = y;
-//   }
-// }
-
-// class AABB {
-//   constructor(center, halfSize) {
-//     this.center = center;
-//     this.halfSize = halfSize;
-//   }
-
-//    overlapss(other) {
-//      var center = this.center;
-//      var halfSize = this.halfSize;
-//     if ( Math.abs(center.x - other.center.x) > halfSize.x + other.halfSize.x ){
-//       return false;
-//     } 
-
-//     if ( Math.abs(center.y - other.center.y) > halfSize.y + other.halfSize.y ) {
-//       return false;
-//     }
-
-//     return true;
-//   }
-// }
-
-// class MovingObject {
-//   constructor (){
-//     this.oldPosition = new Vector2(50, 50);
-//     this.position = new Vector2(50, 50);
-
-//     this.oldSpeed = new Vector2(0, 0);
-//     this.speed = new Vector2(0, 0); 
-
-//     this.scale = new Vector2(1, 1);
-
-//     this.boundingBox = new AABB(this.position, new Vector2(20, 20));
-  
-//     this.pushedRightWall = false;
-//     this.pushesRightWall = false;
-
-//     this.pushedLeftWall = false;
-//     this.pushesLeftWall = false;
-
-//     this.wasOnGround = false;
-//     this.onGround = false;
-
-//     this.wasAtCeiling = false;
-//     this.atCeiling = false;
-  
-//   }
-
-//   updatePhysics(){ //updating old position...
-//     this.oldPosition = this.position; 
-//     this.oldSpeed = this.speed;
-    
-//     this.wasOnGround = this.onGround;
-//     this.pushedRightWall = this.pushesRightWall;
-//     this.pushedLeftWall = this.pushesLeftWall;
-//     this.wasAtCeiling = this.atCeiling;
-
-//     this.position += this.speed * 1000/60;
-//     if (this.position.y < 0.0){
-//       this.position.y = 0.0;
-//       this.onGround = true;
-//     } else {
-//       this.onGround = false;
-//     }
-
-//     this.AABB.center = this.position;
-//   }
-
-// }
-
-// var CharacterState = {
-//   "Stand": 0,
-//   "Walk": 1,
-//   "Jump": 2
-// };
-
-// class Character { 
-//     constructor(){ // Game Start values...
-//       this.body = new MovingObject();
-//       this.currentState = CharacterState.Stand;
-//       this.walkSpeed = 0;
-//       this.jumpSpeed = 0;
-
-//     }
-
-//     updateCharacter(){
-//       switch (this.currentState){
-//           case CharacterState.Stand:
-//             this.body.speed = new Vector2(0, 0);
-//             break;
-//           case CharacterState.Walk:
-//               break;
-//           case CharacterState.Jump:
-//               break;
-//       }
-//       this.body.updatePhysics();
-//       draw();
-//     }
-
-//     draw() {
-//       // this.body.position.x, this.body.boundingBox.halfSize.x*2, this.body.boundingBox.halfSize.y*2;
-//     }
-// }
-
-// var mike = new Character();
-
-// GAME MENU================================================================================
 
 document.body.addEventListener("keydown", function(event){
 
-  if (event.keyCode == 13 && !gameStart){
-    startGame();
-  }
-
-  keys[event.keyCode] = true;
+	if(event.keyCode == 13 && !gameStarted){
+		startGame();
+  } 
+  if(event.keyCode == 13 && complete){
+		reset();
+	}
+	keys[event.keyCode] = true;
 
 });
 
 document.body.addEventListener("keyup", function(event){
-  keys[event.keyCode] = false;
+	keys[event.keyCode] = false;
 });
 
-startScreen();
+var startMusic = new sound("")
 
-function startScreen (){
-context.font = "50px Impact";
-context.fillStyle = "#fff";
-context.textAlign = "center";
-context.fillText("Cow Tippin", canvas.width/2, canvas.height/2);
+intro_screen();
 
-context.font = "20px Arial";
-context.fillText("Enter To Start", canvas.width/2, canvas.height/2 + 50);
+function intro_screen(){
+
 }
-
-// GAME START========================================================================================
 
 function startGame(){
-  gameStart = true;
+	gameStarted = true;
+	clearCanvas();
+
+ requestAnimationFrame(loop)
+}
+
+function levelCompleted(){
   clearCanvas();
-
-  setInterval(function(){
-    clearCanvas();
-    gameLoop();
-  }, 1000/60)
-
+  complete = true;
+  context.drawImage(mikeIdle, 0, 0, 40, 60)
 }
 
-// PLATFORMS=========================================================================================
+function reset(){
+  mike.x = canvas.width/2,
+	mike.y = canvas.height - 110,
+	mike.grounded = true;
+	mike.velY = 0;
+  mike.velX = 0;
+  mike.speed = 4;
+	complete = false;
 
-function drawPlatforms(){
-  context.fillStyle = "rgba(100, 100, 100, 0.6)";
-  for(var i = 0; i < platform.length; i++){
-    context.fillRect(platform[i].x + backgroundScroll.x, platform[i].y, platform[i].width, platform[i].height);
-  }
+	requestAnimationFrame(loop);
 }
 
 
-// GAME SPEED/GAME REFRESH/MOVEMENTS====================================================================
+function draw_platforms(){
+	context.fillStyle = "rgba(100, 100, 100, 0)";
 
-function gameLoop(){
-  // BackGround Scroll
-  context.drawImage(bgImage, backgroundScroll.x, backgroundScroll.y, 7680, 720)
-  
-  drawPlatforms();
+	for(var i = 0; i < platforms.length; i++){
+		context.fillRect(platforms[i].x, platforms[i].y, platforms[i].width, platforms[i].height);
+	}
+}
+
+
+
+function loop(){
  
-  mike.draw();
-  if(keys[90] || keys[32]){
-    if(!mike.jump){
-    mike.velY = -mike.jumpPower * 2; 
-    mike.jump = true;
-    }
-  }
+  context.drawImage(bgImage, 0, 0, 720, 1200);
+	draw_platforms();
+	mike.draw();
 
-  if(keys[39]){ // RIGHT
-    mike.velX = mike.speed;
-  }
-  if(keys[37]){ // LEFT
-    mike.velX = -mike.speed;
-  }
+	if(keys[38] || keys[32]){
+		if(!mike.jumping){
+			mike.velY = -mike.jumpStrength*2;
+			mike.jumping = true;
+		}
+	}
 
-  var newX = mike.x + mike.velX;
-  mike.y += mike.velY;
-  mike.velX *= friction;
-  mike.velY += gravity;
-  mike.grounded = false;
-  // mike.xDirection = 1;
+	if(keys[39]){
+		if(mike.velX < mike.speed){
+      mike.velX++;
+      mike.position === "right";
+		}
+	}
+
+	if(keys[37]){
+		if(mike.velX > -mike.speed){
+			mike.velX--;
+		}
+	}
+
+	mike.x += mike.velX;
+	mike.y += mike.velY;
+
+	mike.velX *= friction;
+	mike.velY += gravity;
+
+	mike.grounded = false;
+	for(var i = 0; i < platforms.length; i++){
+		var direction = collisionCheck(mike, platforms[i]);
+
+		if(direction == "left" || direction == "right"){
+			mike.velX = 0;
+		} else if(direction == "bottom"){
+			mike.jumping = false;
+			mike.grounded = true;
+		} else if(direction == "top"){
+			mike.velY *= -1;
+		}
+
+	}
+
+	if(mike.grounded){
+		mike.velY = 0;
+  }
   
-  for(var i = 0; i < platform.length; i++){
-    var direction = checkCollision(mike, platform[i]);
-    if (direction == "left" || direction == "right"){
-      mike.velX = 0;
-    } else if(direction == "bottom"){
-      mike.jump = false;
-      mike.grounded = true;
-    } else if (direction == "top"){
-      mike.velY *= -1;
-    }
-    if (mike.grounded) {
-      mike.velY = 0;
-    }
+  if (collisionCheck(mike, treeHouse)){
+    levelCompleted();
   }
-
-  // if(mike.y >= canvas.height - 295){
-  //   mike.y = canvas.height - 295;
-  //   mike.jump = false;
-  // }
-
-  function checkCollision(character, platform){
-    var vectorX = (character.x + (character.width/2) - (platform.x + platform.width/2) );
-    var vectorY = (character.y + (character.height/2) - (platform.y + platform.height/2) );
-    var halfWidth = (character.width/2) + (platform.width/2);
-    var halfHeight = (character.height/2) + (platform.height/2);
-
-    var collisionDir = null;
-
-    if(Math.abs(vectorX) < halfWidth && Math.abs(vectorY) < halfHeight){
-
-      var offsetX = halfWidth - Math.abs(vectorX);
-      var offsetY = halfHeight - Math.abs(vectorY);
-
-      if (offsetX < offsetY){
-        if(vectorX > 0) {
-          collisionDir = "left";
-          character.x += offsetX;
-        } else {
-          collisionDir = "right";
-          character.x -= offsetX;
-        }
-      } else {
-         if (vectorY > 0 ){
-           collisionDir = "top";
-           character.y += offsetY;
-         } else {
-           collisionDir = "bottom";
-           character.y -= offsetY;
-         }
-      }
-    }
-
-    return collisionDir;
-
   
+  if (!complete){
+    requestAnimationFrame(loop);
   }
-
-
-  //BACKGROUND SCROLL================================================================================================
-  // var FIXED_X_POS = 425;
-
-  if (backgroundScroll.x === 0 && mike.x < 425) { // start of level
-    mike.x = Math.max(10, newX); // position needs to be at least 10
-    mike.x = Math.min(425, mike.x); // at most 425
-  }
-  else if (backgroundScroll.x === 0 && mike.x === 425) {
-    mike.x = newX;
-  }
-  else if (backgroundScroll.x === -6400 && mike.x >= 425) { // end of level
-    mike.x = Math.min(newX, canvas.width - 20);
-  } 
-  else {
-    var newPos = backgroundScroll.x - mike.velX;
-    newPos = Math.min(0, newPos); // position of background needs to be at most 0
-    backgroundScroll.x = Math.max(-6400, newPos); // and at least -6400
-    mike.x = 425; // while background is scrolling, we fix mike at 425
-  }
-
-  console.log(mike.x)
 
 
 }
 
+function collisionCheck(character, platform){
+
+	var vectorX = (character.x + (character.width/2)) - (platform.x + (platform.width/2));
+	var vectorY = (character.y + (character.height/2)) - (platform.y + (platform.height/2));
+
+	var halfWidths = (character.width/2) + (platform.width/2);
+	var halfHeights = (character.height/2) + (platform.height/2);
+
+	var collisionDirection = null;
+
+	if(Math.abs(vectorX) < halfWidths && Math.abs(vectorY) < halfHeights){
+
+		var offsetX = halfWidths - Math.abs(vectorX);
+		var offsetY = halfHeights - Math.abs(vectorY);
+		if(offsetX < offsetY){
+
+			if (vectorX > 0){
+				collisionDirection = "left";
+				character.x += offsetX;
+			} else {
+				collisionDirection = "right";
+				character.x -= offsetX;
+			}
+
+		} else {
+
+			if (vectorY > 0){
+				collisionDirection = "top";
+				character.y += offsetY;
+			} else {
+				collisionDirection = "bottom";
+				character.y -= offsetY;
+			}
+
+		}
+
+	}
+
+  return collisionDirection;
+  
+  
+
+
+}
 
 function clearCanvas(){
-  context.clearRect(0, 0, 1280, 720);
-};
+	context.clearRect(0, 0, 720, 1200);
+}
+
